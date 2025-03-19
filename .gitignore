@@ -1,0 +1,14 @@
+data/
+exps/
+mycode/
+*__pycache__*
+code/tmp_build/
+code/wandb/
+slurm-*.out
+.vscode/
+code/pretrained_models/
+code/load/tets/256_tets.npz
+code/.threestudio_cache/
+code/train_hgx.slurm
+code/train_dgx.slurm
+code/run.sh
