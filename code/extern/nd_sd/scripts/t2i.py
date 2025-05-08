@@ -22,7 +22,7 @@ from ldm.util import instantiate_from_config
 from model_zoo import build_model
 from omegaconf import OmegaConf
 from PIL import Image
-from pytorch_lightning import seed_everything
+from lightning.pytorch import seed_everything
 from torch import autocast
 from torchvision.utils import make_grid
 from tqdm import tqdm, trange

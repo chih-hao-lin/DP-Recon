@@ -2,7 +2,7 @@ import bisect
 import math
 import numpy as np
 import pdb
-import pytorch_lightning as pl
+import lightning.pytorch as pl
 import random
 import torch
 import torch.nn.functional as F

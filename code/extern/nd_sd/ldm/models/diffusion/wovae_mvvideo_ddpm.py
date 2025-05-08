@@ -13,7 +13,7 @@ from contextlib import contextmanager
 from functools import partial
 
 import numpy as np
-import pytorch_lightning as pl
+import lightning.pytorch as pl
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -37,9 +37,9 @@ from torchvision.utils import make_grid
 from tqdm import tqdm
 
 try:
-    from pytorch_lightning.utilities.distributed import rank_zero_only
+    from lightning.pytorch.utilities.distributed import rank_zero_only
 except:
-    from pytorch_lightning.utilities.rank_zero import rank_zero_only
+    from lightning.pytorch.utilities.rank_zero import rank_zero_only
 
 __conditioning_keys__ = {
     'concat': 'c_concat',

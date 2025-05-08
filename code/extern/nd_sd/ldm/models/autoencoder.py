@@ -3,7 +3,7 @@ from contextlib import contextmanager
 
 import cv2
 import numpy as np
-import pytorch_lightning as pl
+import lightning.pytorch as pl
 import torch
 import torch.nn.functional as F
 from einops import repeat

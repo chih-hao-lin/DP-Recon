@@ -2,7 +2,7 @@ import os
 from copy import deepcopy
 from glob import glob
 
-import pytorch_lightning as pl
+import lightning.pytorch as pl
 import torch
 from einops import rearrange
 from ldm.modules.diffusionmodules.openaimodel import (EncoderUNetModel,

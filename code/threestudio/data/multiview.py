@@ -3,7 +3,7 @@ import json
 import math
 import numpy as np
 import os
-import pytorch_lightning as pl
+import lightning.pytorch as pl
 import random
 import torch
 import torch.nn.functional as F

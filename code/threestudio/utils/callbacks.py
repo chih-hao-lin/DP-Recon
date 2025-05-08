@@ -1,18 +1,18 @@
 import os
-import pytorch_lightning
+import lightning.pytorch
 import shutil
 import subprocess
 
 from threestudio.utils.config import dump_config
 from threestudio.utils.misc import parse_version
 
-if parse_version(pytorch_lightning.__version__) > parse_version("1.8"):
-    from pytorch_lightning.callbacks import Callback
+if parse_version(lightning.pytorch.__version__) > parse_version("1.8"):
+    from lightning.pytorch.callbacks import Callback
 else:
-    from pytorch_lightning.callbacks.base import Callback
+    from lightning.pytorch.callbacks.base import Callback
 
-from pytorch_lightning.callbacks.progress import TQDMProgressBar
-from pytorch_lightning.utilities.rank_zero import (rank_zero_only,
+from lightning.pytorch.callbacks.progress import TQDMProgressBar
+from lightning.pytorch.utilities.rank_zero import (rank_zero_only,
                                                    rank_zero_warn,)
 
 

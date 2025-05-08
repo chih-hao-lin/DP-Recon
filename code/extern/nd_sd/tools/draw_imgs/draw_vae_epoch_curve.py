@@ -15,7 +15,7 @@ import warnings
 from functools import partial
 
 import numpy as np
-import pytorch_lightning as pl
+import lightning.pytorch as pl
 import torch
 import torchvision
 from ldm.data.base import Txt2ImgIterableBaseDataset
@@ -23,20 +23,20 @@ from ldm.util import instantiate_from_config
 from omegaconf import OmegaConf
 from packaging import version
 from PIL import Image
-from pytorch_lightning import seed_everything
-from pytorch_lightning.callbacks import (Callback, LearningRateMonitor,
+from lightning.pytorch import seed_everything
+from lightning.pytorch.callbacks import (Callback, LearningRateMonitor,
                                          ModelCheckpoint)
-from pytorch_lightning.loggers import TensorBoardLogger
-from pytorch_lightning.trainer import Trainer
-from pytorch_lightning.utilities import rank_zero_info
+from lightning.pytorch.loggers import TensorBoardLogger
+from lightning.pytorch.trainer import Trainer
+from lightning.pytorch.utilities import rank_zero_info
 from torch import autocast
 from torch.utils.data import DataLoader, Dataset, Subset, random_split
 
 if version.parse(pl.__version__) > version.parse('1.4.2'):
-    from pytorch_lightning.utilities import rank_zero_only
-    from pytorch_lightning.plugins.precision import MixedPrecisionPlugin
+    from lightning.pytorch.utilities import rank_zero_only
+    from lightning.pytorch.plugins.precision import MixedPrecisionPlugin
 else:
-    from pytorch_lightning.utilities.distributed import rank_zero_only
+    from lightning.pytorch.utilities.distributed import rank_zero_only
 
 warnings.filterwarnings('ignore')
 
@@ -533,7 +533,7 @@ if __name__ == '__main__':
     if version.parse(pl.__version__) > version.parse('1.4.2'):
         default_logger_cfgs = {
             'wandb': {
-                'target': 'pytorch_lightning.loggers.WandbLogger',
+                'target': 'lightning.pytorch.loggers.WandbLogger',
                 'params': {
                     'name': nowname,
                     'save_dir': logdir,
@@ -542,7 +542,7 @@ if __name__ == '__main__':
                 }
             },
             'tensorboard': {
-                'target': 'pytorch_lightning.loggers.TensorBoardLogger',
+                'target': 'lightning.pytorch.loggers.TensorBoardLogger',
                 'params': {
                     'name': 'tensorboard',
                     'save_dir': logdir,
@@ -553,7 +553,7 @@ if __name__ == '__main__':
     else:
         default_logger_cfgs = {
             'wandb': {
-                'target': 'pytorch_lightning.loggers.WandbLogger',
+                'target': 'lightning.pytorch.loggers.WandbLogger',
                 'params': {
                     'name': nowname,
                     'save_dir': logdir,
@@ -562,7 +562,7 @@ if __name__ == '__main__':
                 }
             },
             'testtube': {
-                'target': 'pytorch_lightning.loggers.TestTubeLogger',
+                'target': 'lightning.pytorch.loggers.TestTubeLogger',
                 'params': {
                     'name': 'testtube',
                     'save_dir': logdir,
@@ -580,7 +580,7 @@ if __name__ == '__main__':
     # modelcheckpoint - use TrainResult/EvalResult(checkpoint_on=metric) to
     # specify which metric is used to determine best models
     default_modelckpt_cfg = {
-        'target': 'pytorch_lightning.callbacks.ModelCheckpoint',
+        'target': 'lightning.pytorch.callbacks.ModelCheckpoint',
         'params': {
             'dirpath': ckptdir,
             'filename': '{epoch:06}',
@@ -672,7 +672,7 @@ if __name__ == '__main__':
         )
         default_metrics_over_trainsteps_ckpt_dict = {
             'metrics_over_trainsteps_checkpoint': {
-                'target': 'pytorch_lightning.callbacks.ModelCheckpoint',
+                'target': 'lightning.pytorch.callbacks.ModelCheckpoint',
                 'params': {
                     'dirpath': os.path.join(ckptdir, 'trainstep_checkpoints'),
                     'filename': '{epoch:06}-{step:09}',

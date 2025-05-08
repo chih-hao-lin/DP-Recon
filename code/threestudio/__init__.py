@@ -16,9 +16,9 @@ def find(name):
 ###  grammar sugar for logging utilities  ###
 import logging
 
-logger = logging.getLogger("pytorch_lightning")
+logger = logging.getLogger("lightning.pytorch")
 
-from pytorch_lightning.utilities.rank_zero import (rank_zero_debug,
+from lightning.pytorch.utilities.rank_zero import (rank_zero_debug,
                                                    rank_zero_info,
                                                    rank_zero_only,)
 

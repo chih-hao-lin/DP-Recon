@@ -11,7 +11,7 @@ from functools import partial
 
 import cv2
 import numpy as np
-import pytorch_lightning as pl
+import lightning.pytorch as pl
 import torch
 import torchvision
 from einops import rearrange
@@ -20,12 +20,12 @@ from ldm.util import instantiate_from_config
 from omegaconf import OmegaConf
 from packaging import version
 from PIL import Image
-from pytorch_lightning import seed_everything
-from pytorch_lightning.callbacks import (Callback, LearningRateMonitor,
+from lightning.pytorch import seed_everything
+from lightning.pytorch.callbacks import (Callback, LearningRateMonitor,
                                          ModelCheckpoint)
-from pytorch_lightning.trainer import Trainer
-from pytorch_lightning.utilities import rank_zero_info
-from pytorch_lightning.utilities.distributed import rank_zero_only
+from lightning.pytorch.trainer import Trainer
+from lightning.pytorch.utilities import rank_zero_info
+from lightning.pytorch.utilities.distributed import rank_zero_only
 from torch import autocast
 from torch.utils.data import DataLoader, Dataset, Subset, random_split
 from utils.color_transfer import (identity, split_rgbd_only_tensor,

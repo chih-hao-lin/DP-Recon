@@ -1,9 +1,9 @@
 import os
 import pdb
 
-from pytorch_lightning.callbacks import (Callback, LearningRateMonitor,
+from lightning.pytorch.callbacks import (Callback, LearningRateMonitor,
                                          ModelCheckpoint)
-from pytorch_lightning.utilities.distributed import rank_zero_only
+from lightning.pytorch.utilities.distributed import rank_zero_only
 
 
 class GlobalCallback(Callback):

@@ -3,7 +3,7 @@ import gzip
 import json
 import numpy as np
 import os
-import pytorch_lightning as pl
+import lightning.pytorch as pl
 import torch
 import torchvision.transforms.functional as TF
 import warnings

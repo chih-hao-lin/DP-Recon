@@ -13,7 +13,7 @@ import wandb
 from matplotlib import cm
 from matplotlib.colors import LinearSegmentedColormap
 from PIL import Image, ImageDraw
-from pytorch_lightning.loggers import WandbLogger
+from lightning.pytorch.loggers import WandbLogger
 
 from threestudio.models.mesh import Mesh
 from threestudio.utils.typing import *

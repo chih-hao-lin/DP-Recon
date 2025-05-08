@@ -5,7 +5,7 @@ import torch.multiprocessing as mp
 import torch.nn as nn
 import torch.nn.functional as F
 from dataclasses import dataclass, field
-from pytorch_lightning.utilities.rank_zero import rank_zero_only
+from lightning.pytorch.utilities.rank_zero import rank_zero_only
 from transformers import AutoTokenizer, BertForMaskedLM
 
 import threestudio

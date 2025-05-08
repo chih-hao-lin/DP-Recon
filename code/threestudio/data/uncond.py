@@ -1,6 +1,6 @@
 import bisect
 import math
-import pytorch_lightning as pl
+import lightning.pytorch as pl
 import random
 import torch
 import torch.nn.functional as F

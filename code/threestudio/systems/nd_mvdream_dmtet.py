@@ -7,7 +7,7 @@ import torch
 import torch.nn.functional as F
 from dataclasses import dataclass, field
 from einops import repeat
-from pytorch_lightning.utilities.rank_zero import rank_zero_only
+from lightning.pytorch.utilities.rank_zero import rank_zero_only
 
 import threestudio
 from threestudio.systems.base import BaseLift3DSystem
