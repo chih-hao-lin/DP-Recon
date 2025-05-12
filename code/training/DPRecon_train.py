@@ -11,6 +11,7 @@ import json
 import wandb
 import trimesh
 import random
+from natsort import natsorted
 
 import utils.general as utils
 import utils.plots as plt
@@ -564,10 +565,10 @@ class DPReconTrainRunner():
                 from PIL import Image
 
                 # bg_mesh_path = os.path.join(self.plots_dir, f'surface_{epoch}_0.ply')
-                bg_mesh_path = glob(os.path.join(self.plots_dir, f'surface_*_0.ply'))[-1]
+                bg_mesh_path = natsorted(glob(os.path.join(self.plots_dir, f'surface_*_0.ply')))[-1]
                 if not os.path.exists(bg_mesh_path):
                     # ft_bg_mesh_path = os.path.join(self.ft_folder, 'plots', f'surface_{epoch}_0.ply')
-                    ft_bg_mesh_path = glob(os.path.join(self.ft_folder, 'plots', f'surface_*_0.ply'))[-1]
+                    ft_bg_mesh_path = natsorted(glob(os.path.join(self.ft_folder, 'plots', f'surface_*_0.ply')))[-1]
                     shutil.copyfile(ft_bg_mesh_path, bg_mesh_path)
 
                 mesh = trimesh.load(bg_mesh_path)
@@ -915,7 +916,8 @@ class DPReconTrainRunner():
                 # set color mesh
                 prior_bbox_root_path = os.path.join(self.plots_dir, 'prior_bbox')
                 for obj_idx in self.model.module.prior_obj_idx_list:         # include bg and obj
-                    obj_mesh_path = os.path.join(self.plots_dir, f'surface_{epoch}_{obj_idx}.ply')
+                    # obj_mesh_path = os.path.join(self.plots_dir, f'surface_{epoch}_{obj_idx}.ply')
+                    obj_mesh_path = natsorted(glob(os.path.join(self.plots_dir, f'surface_*_{obj_idx}.ply')))[-1]
                     if obj_idx == 0:
                         prior_bbox_path = None
                     else:
@@ -924,7 +926,8 @@ class DPReconTrainRunner():
                         
                 obj_mesh_path_list = []
                 for i in range(self.n_sem):
-                    i_mesh_path = os.path.join(self.plots_dir, f'surface_{epoch}_{i}.ply')
+                    # i_mesh_path = os.path.join(self.plots_dir, f'surface_{epoch}_{i}.ply')
+                    i_mesh_path = natsorted(glob(os.path.join(self.plots_dir, f'surface_*_{i}.ply')))[-1]
                     obj_mesh_path_list.append(i_mesh_path)
                 prior_bbox_path = None
                 self.model.module.prior.init_color_mesh(obj_mesh_path_list, 1000, prior_bbox_path)   # add total scene
