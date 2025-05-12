@@ -110,6 +110,13 @@ def fix_object_prior_bbox(root_path, fix_location_json_path):
             continue
 
         bbox_json_path = os.path.join(prior_bbox_root_path, f'bbox_{key}.json')
+        if not os.path.exists(bbox_json_path):
+            print(f'{bbox_json_path} does not exist, set default ...')
+            obj_bbox = [[-1.0, -1.0, -1.0], [1.0, 1.0, 1.0]]
+            with open(bbox_json_path, 'w') as f:
+                json.dump(obj_bbox, f)
+            print(f'use default bg bbox because bg has too many vertices, bbox_{key}.json save to {prior_bbox_root_path}')
+ 
         ori_bbox_json_path = os.path.join(ori_prior_bbox_root_path, f'bbox_{key}.json')
         shutil.copyfile(bbox_json_path, ori_bbox_json_path)
         

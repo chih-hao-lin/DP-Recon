@@ -9,6 +9,7 @@ from glob import glob
 import cv2
 import random
 import json
+from PIL import Image
 
 def rot_cameras_along_x(pose_matrix, angle):
     theta = angle * np.pi / 180
@@ -46,17 +47,20 @@ class SceneDatasetDN_segs(torch.utils.data.Dataset):
                  scan_id=0,
                  center_crop_type='xxxx',
                  use_mask=False,
-                 num_views=-1
+                 num_views=-1,
+                 split='train',
+                 test_split_ratio=0.1,
                  ):
 
-        # self.instance_dir = os.path.join('../data', data_dir, 'scan{0}'.format(scan_id))
-        self.instance_dir = os.path.join(data_root_dir, data_dir, 'scan{0}'.format(scan_id))
+        self.instance_dir = os.path.join(data_root_dir, data_dir, 'room_{0}'.format(scan_id))
         print(self.instance_dir)
 
         self.total_pixels = img_res[0] * img_res[1]
         self.img_res = img_res
         self.num_views = num_views
         assert num_views in [-1, 3, 6, 9]
+        self.need_fix_x = False
+        self.need_fix_y = False
         
         assert os.path.exists(self.instance_dir), "Data directory is empty"
 
@@ -75,10 +79,10 @@ class SceneDatasetDN_segs(torch.utils.data.Dataset):
             data_paths = sorted(data_paths)
             return data_paths
             
-        image_paths = glob_data(os.path.join('{0}'.format(self.instance_dir), "*_rgb.png"))
-        depth_paths = glob_data(os.path.join('{0}'.format(self.instance_dir), "*_depth.npy"))
-        normal_paths = glob_data(os.path.join('{0}'.format(self.instance_dir), "*_normal.npy"))
-        instance_mask_paths = glob_data(os.path.join('{0}'.format(self.instance_dir), "instance_mask", "*.png"))
+        image_paths = glob_data(os.path.join(self.instance_dir, "images", "*.jpg"))
+        depth_paths = glob_data(os.path.join(self.instance_dir, "depth", "*.npy"))
+        normal_paths = glob_data(os.path.join(self.instance_dir, "normal", "*.png"))
+        instance_mask_paths = glob_data(os.path.join(self.instance_dir, "instance_mask", "*.png"))
         
         # mask is only used in the replica dataset as some monocular depth predictions have very large error and we ignore it
         if use_mask:
@@ -88,84 +92,57 @@ class SceneDatasetDN_segs(torch.utils.data.Dataset):
 
         self.n_images = len(image_paths)
         print('[INFO]: Dataset Size ', self.n_images)
+        num_test_split = int(self.n_images * test_split_ratio)
+        train_split_indices = np.linspace(0, self.n_images - 1, self.n_images - num_test_split).astype(np.int32)
+        test_split_indices = np.setdiff1d(np.arange(self.n_images), train_split_indices).tolist()
+        train_split_indices = train_split_indices.tolist()
+        split_indices = None
+        if split == 'train':
+            split_indices = train_split_indices
+        elif split == 'test':
+            split_indices = test_split_indices
+        self.n_images = len(split_indices)
 
-        # NOTE: we need to fix the camera pose as z up
-        # 1. replica scan3 need to fix y axis -7.8 degree
-        # 2. youtube scan1 need to fix x axis -10.1 degree
-        # 3. youtube scan2 need to fix x axis -7.0 degree
-        self.need_fix_x = False
-        self.need_fix_y = False
-        scan_name = 'scan{0}'.format(scan_id)
-        if data_dir == 'replica' and 'scan3' in scan_name:
-            self.need_fix_y = True
-            self.fix_y_deg = -7.8
-            print(f'[INFO]: Fixing camera pose for {data_dir} {scan_name} by rotating along y axis {self.fix_y_deg} degree')
-        elif data_dir == 'youtube':
-            if 'scan1' in scan_name:
-                self.need_fix_x = True
-                self.fix_x_deg = -10.1
-                print(f'[INFO]: Fixing camera pose for {data_dir} {scan_name} by rotating along x axis {self.fix_x_deg} degree')
-            elif 'scan2' in scan_name:
-                self.need_fix_x = True
-                self.fix_x_deg = -7.0
-                print(f'[INFO]: Fixing camera pose for {data_dir} {scan_name} by rotating along x axis {self.fix_x_deg} degree')
-            elif 'scan3' in scan_name:
-                self.need_fix_x = True
-                self.fix_x_deg = -3.0
-                print(f'[INFO]: Fixing camera pose for {data_dir} {scan_name} by rotating along x axis {self.fix_x_deg} degree')
-            else:
-                print(f'[INFO]: No need to fix camera pose for {data_dir} {scan_name}')
-        else:
-            print(f'[INFO]: No need to fix camera pose for {data_dir} {scan_name}')
-        
-        self.cam_file = '{0}/cameras.npz'.format(self.instance_dir)
-        camera_dict = np.load(self.cam_file)
-        scale_mats = [camera_dict['scale_mat_%d' % idx].astype(np.float32) for idx in range(self.n_images)]
-        world_mats = [camera_dict['world_mat_%d' % idx].astype(np.float32) for idx in range(self.n_images)]
+        camera_info_path = os.path.join(self.instance_dir, "transforms.json")
+        with open(camera_info_path, 'r') as f:
+            camera_info = json.load(f)
+
+        fx = camera_info['fl_x']
+        fy = camera_info['fl_y']
+        cx = camera_info['cx']
+        cy = camera_info['cy']
+
+        intrinsics = np.eye(4)
+        intrinsics[:3, :3] = np.array([[fx, 0, cx], [0, fy, cy], [0, 0, 1]])
+
+        t_all = []
+        for i in range(len(camera_info['frames'])):
+            pose = np.array(camera_info['frames'][i]['transform_matrix']).reshape(4, 4)
+            t = pose[:3, 3]
+            t_all.append(t)
+        t_all = np.array(t_all)
+        t_max = np.max(t_all, axis=0)
+        t_min = np.min(t_all, axis=0)
+        norm_scale = np.max(t_max - t_min)
+        norm_center = 0.5 * (t_max + t_min)
 
         self.intrinsics_all = []
         self.pose_all = []
-        for scale_mat, world_mat in zip(scale_mats, world_mats):
-            P = world_mat @ scale_mat
-            P = P[:3, :4]
-            intrinsics, pose = rend_util.load_K_Rt_from_P(None, P)
-
-            if self.need_fix_y:
-                pose = rot_cameras_along_y(pose, self.fix_y_deg)         # need to fix the camera pose along y axis for replica scan3
-            if self.need_fix_x:
-                pose = rot_cameras_along_x(pose, self.fix_x_deg)         # need to fix the camera pose along x axis for youtube scan1 and scan2
-
-            # because we do resize and center crop 384x384 when using omnidata model, we need to adjust the camera intrinsic accordingly
-            if center_crop_type == 'center_crop_for_replica':
-                scale = 384 / 680
-                offset = (1200 - 680 ) * 0.5
-                intrinsics[0, 2] -= offset
-                intrinsics[:2, :] *= scale
-            elif center_crop_type == 'center_crop_for_tnt':
-                scale = 384 / 540
-                offset = (960 - 540) * 0.5
-                intrinsics[0, 2] -= offset
-                intrinsics[:2, :] *= scale
-            elif center_crop_type == 'center_crop_for_dtu':
-                scale = 384 / 1200
-                offset = (1600 - 1200) * 0.5
-                intrinsics[0, 2] -= offset
-                intrinsics[:2, :] *= scale
-            elif center_crop_type == 'padded_for_dtu':
-                scale = 384 / 1200
-                offset = 0
-                intrinsics[0, 2] -= offset
-                intrinsics[:2, :] *= scale
-            elif center_crop_type == 'no_crop':  # for scannet dataset, we already adjust the camera intrinsic duing preprocessing so nothing to be done here
-                pass
-            else:
-                raise NotImplementedError
-            
+        for i in range(self.n_images):
+            idx = split_indices[i]
+            pose = np.array(camera_info['frames'][idx]['transform_matrix']).reshape(4, 4)
+            t = pose[:3, 3]
+            t_norm = (t - norm_center) / norm_scale
+            pose[:3, 3] = t_norm
+            # opengl to opencv
+            pose[:, 1:3] *= -1
             self.intrinsics_all.append(torch.from_numpy(intrinsics).float())
             self.pose_all.append(torch.from_numpy(pose).float())
 
         self.rgb_images = []
-        for path in image_paths:
+        for i in range(self.n_images):
+            idx = split_indices[i]
+            path = image_paths[idx]
             rgb = rend_util.load_rgb(path)
             rgb = rgb.reshape(3, -1).transpose(1, 0)
             self.rgb_images.append(torch.from_numpy(rgb).float())
@@ -173,12 +150,16 @@ class SceneDatasetDN_segs(torch.utils.data.Dataset):
         self.depth_images = []
         self.normal_images = []
 
-        for dpath, npath in zip(depth_paths, normal_paths):
+        for i in range(self.n_images):
+            idx = split_indices[i]
+            dpath = depth_paths[idx]
+            npath = normal_paths[idx]
             depth = np.load(dpath)
             self.depth_images.append(torch.from_numpy(depth.reshape(-1, 1)).float())
         
-            normal = np.load(npath)
-            normal = normal.reshape(3, -1).transpose(1, 0)
+            normal = Image.open(npath)
+            normal = np.array(normal).astype(np.float32) / 255.0
+            normal = normal.reshape(-1, 3)
             # important as the output of omnidata is normalized
             normal = normal * 2. - 1.
             self.normal_images.append(torch.from_numpy(normal).float())
@@ -186,13 +167,17 @@ class SceneDatasetDN_segs(torch.utils.data.Dataset):
         # load instance mask and map to label_mapping
         self.semantic_images = []
         self.instance_dilated_region_list = []
-        for im_path in instance_mask_paths:
+        for i in range(self.n_images):
+            idx = split_indices[i]
+            im_path = instance_mask_paths[idx]
             
             instance_mask_pic = cv2.imread(im_path, -1)
             if len(instance_mask_pic.shape) == 3:
                 instance_mask_pic = instance_mask_pic[:, :, 0]
             instance_mask = instance_mask_pic.reshape(1, -1).transpose(1, 0)  # [HW, 1]
-            instance_mask[instance_mask==255] = 0         # background is 0
+            background = instance_mask == 255
+            instance_mask += 1
+            instance_mask[background] = 0       # background is 0
 
             ins_list = np.unique(instance_mask)
             cur_sems = np.copy(instance_mask)
@@ -314,31 +299,30 @@ class SceneDatasetDN_segs(torch.utils.data.Dataset):
 def test_dataset():
     data_root_dir = "/hdd/indoor_digital_twin/DP-Recon/data/"
     data_dir = "replica"
-    scan_id = 1
-    img_res = (384, 384)
+    scan_id = 0
+    img_res = (512, 512)
 
     dataset = SceneDatasetDN_segs(
         data_root_dir=data_root_dir,
         data_dir=data_dir,
         img_res=img_res,
         scan_id=scan_id,
-        center_crop_type='center_crop_for_replica'
     )
 
-    idx, sample, ground_truth = dataset[0]
-    rgb = ground_truth['rgb']
-    print('rgb.shape:', rgb.shape)
+    poses_all = torch.stack(dataset.pose_all).numpy()
+    print('poses_all.shape:', poses_all.shape)
+    ts = poses_all[:, :3, 3]
+    # print(ts)
+    max_ts = np.max(ts, axis=0)
+    min_ts = np.min(ts, axis=0)
+    dist_ts = max_ts - min_ts
+    print('dist_ts:', dist_ts)
+    center = 0.5 * (max_ts + min_ts)
+    print('center:', center)
 
-    # poses_all = torch.stack(dataset.pose_all).numpy()
-    # print('poses_all.shape:', poses_all.shape)
-    # ts = poses_all[:, :3, 3]
-    # # print(ts)
-    # max_ts = np.max(ts, axis=0)
-    # min_ts = np.min(ts, axis=0)
-    # dist_ts = max_ts - min_ts
-    # print('dist_ts:', dist_ts)
-    # center = 0.5 * (max_ts + min_ts)
-    # print('center:', center)
+    idx, sample, ground_truth = dataset[0]
+    # print("Sample: ", sample)
+    # print("Ground Truth: ", ground_truth)
 
 
 if __name__ == "__main__":

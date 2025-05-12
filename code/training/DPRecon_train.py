@@ -25,6 +25,7 @@ from model.VisField import VisGrid
 from utils.get_prior_bbox_withvis import get_prior_bbox_withvis, fix_object_prior_bbox
 import time
 import shutil
+from glob import glob
 
 from threestudio.models.mesh import Mesh
 from torch.utils.tensorboard import SummaryWriter
@@ -562,9 +563,11 @@ class DPReconTrainRunner():
                 from utils.pano_camera_tools import capture_pano_depth
                 from PIL import Image
 
-                bg_mesh_path = os.path.join(self.plots_dir, f'surface_{epoch}_0.ply')
+                # bg_mesh_path = os.path.join(self.plots_dir, f'surface_{epoch}_0.ply')
+                bg_mesh_path = glob(os.path.join(self.plots_dir, f'surface_*_0.ply'))[-1]
                 if not os.path.exists(bg_mesh_path):
-                    ft_bg_mesh_path = os.path.join(self.ft_folder, 'plots', f'surface_{epoch}_0.ply')
+                    # ft_bg_mesh_path = os.path.join(self.ft_folder, 'plots', f'surface_{epoch}_0.ply')
+                    ft_bg_mesh_path = glob(os.path.join(self.ft_folder, 'plots', f'surface_*_0.ply'))[-1]
                     shutil.copyfile(ft_bg_mesh_path, bg_mesh_path)
 
                 mesh = trimesh.load(bg_mesh_path)
@@ -680,7 +683,7 @@ class DPReconTrainRunner():
                 save_nerf_anchor_root_path = os.path.join(self.plots_dir, 'nerf_rgb_anchor_views')
                 os.makedirs(save_nerf_anchor_root_path, exist_ok=True)
 
-                infer_views_num = 100
+                infer_views_num = 10
                 scale_mats = [infer_camera_dict['scale_mat_%d' % idx].astype(np.float32) for idx in range(infer_views_num)]
                 world_mats = [infer_camera_dict['world_mat_%d' % idx].astype(np.float32) for idx in range(infer_views_num)]
                 infer_camera_pose_list = []

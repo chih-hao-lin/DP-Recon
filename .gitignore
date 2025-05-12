@@ -12,3 +12,4 @@ code/.threestudio_cache/
 code/train_hgx.slurm
 code/train_dgx.slurm
 code/run.sh
+logs/
