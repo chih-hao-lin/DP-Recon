@@ -16,4 +16,11 @@
 cd /work/hdd/bcrp/cl121/DP-Recon/code
 
 
-torchrun training/exp_runner.py --conf confs/replica_grid.conf  --scan_id 7 --prior_yaml geometry.yaml
+# replica 
+# CUDA_LAUNCH_BLOCKING=1 torchrun training/exp_runner.py --conf confs/ours/replica.conf   --scan_id 0 --prior_yaml geometry.yaml 
+
+# scannetpp
+# CUDA_LAUNCH_BLOCKING=1 torchrun training/exp_runner.py --conf confs/ours/scannetpp.conf --scan_id 0 --prior_yaml geometry.yaml 
+
+# igibson
+# CUDA_LAUNCH_BLOCKING=1 torchrun training/exp_runner.py --conf confs/ours/igibson.conf   --scan_id 0 --prior_yaml geometry.yaml 

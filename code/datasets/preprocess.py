@@ -43,16 +43,16 @@ def vlm_inference(image_base64, prompt, model="gpt-4-turbo", max_tokens=300, see
         seed=seed
     )
     return response.choices[0].message.content
-    
-def label_with_vlm():
-    dir_root = "/hdd/indoor_digital_twin/DP-Recon/data/replica/room_0"
-    data_type = "replica"
-    scan_id = 0
+
+def is_image_path(path):
+    return path.endswith(('.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG'))
+
+def label_with_vlm(dir_root, data_type="replica", scan_id=0):
     dir_images = os.path.join(dir_root, "images")
     dir_mask = os.path.join(dir_root, "instance_mask")
 
-    path_images = sorted(glob(os.path.join(dir_images, "*.jpg")))
-    path_mask = sorted(glob(os.path.join(dir_mask, "*.png")))
+    path_images = sorted(glob(os.path.join(dir_images, "*")))
+    path_mask = sorted(glob(os.path.join(dir_mask, "*")))
     n_images = len(path_images)
     print(f"Number of images: {n_images}")
 
@@ -152,12 +152,7 @@ def label_with_vlm():
         json.dump(appearance_dict, f, indent=4)
     print("Labeling completed.")
 
-def sample_eval_data():
-    dir_root = "/hdd/indoor_digital_twin/DP-Recon/data/replica/room_0"
-    data_type = "replica"
-    scan_id = 0
-    test_split_ratio=0.1
-    first_k = 10
+def sample_eval_data(dir_root, test_split_ratio=0.1, first_k=10):
     dir_images = os.path.join(dir_root, "images")
     dir_mask = os.path.join(dir_root, "instance_mask")
     
@@ -233,5 +228,9 @@ def sample_eval_data():
     print("Sample evaluation data completed.")
 
 if __name__ == "__main__":
-    # label_with_vlm()
-    sample_eval_data()
+    dir_root = "/hdd/indoor_digital_twin/DP-Recon/data/idt_data/Beechwood_1_int"
+    data_type = "igibson"
+    scan_id = 1
+
+    label_with_vlm(dir_root, data_type, scan_id)
+    sample_eval_data(dir_root)

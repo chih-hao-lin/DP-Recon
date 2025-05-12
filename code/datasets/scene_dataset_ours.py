@@ -79,10 +79,10 @@ class SceneDatasetDN_segs(torch.utils.data.Dataset):
             data_paths = sorted(data_paths)
             return data_paths
             
-        image_paths = glob_data(os.path.join(self.instance_dir, "images", "*.jpg"))
+        image_paths = glob_data(os.path.join(self.instance_dir, "images", "*"))
         depth_paths = glob_data(os.path.join(self.instance_dir, "depth", "*.npy"))
-        normal_paths = glob_data(os.path.join(self.instance_dir, "normal", "*.png"))
-        instance_mask_paths = glob_data(os.path.join(self.instance_dir, "instance_mask", "*.png"))
+        normal_paths = glob_data(os.path.join(self.instance_dir, "normal", "*"))
+        instance_mask_paths = glob_data(os.path.join(self.instance_dir, "instance_mask", "*"))
         
         # mask is only used in the replica dataset as some monocular depth predictions have very large error and we ignore it
         if use_mask:
