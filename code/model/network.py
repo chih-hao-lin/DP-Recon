@@ -1152,6 +1152,16 @@ class DPReconNetwork(nn.Module):
             mesh = self.prior.color_mesh_dict[1000]             # 1000 is the total scene mesh
         self.mesh_color_network.set_obj_idx_list_bbox(0)          # not convert coords
 
+        # print('=======================')
+        # print('mesh.v_pos:', mesh.v_pos.shape)
+        # print('mvp_mtx:', mvp_mtx.shape)
+        # print('c2w:', c2w.shape)
+        # print('camera_positions:', camera_positions.shape)
+        # print('pseudo_camera_distance:', pseudo_camera_distance.shape)
+        # print('pseudo_light_positions:', pseudo_light_positions.shape)
+        # print('height:', height)
+        # print('width:', width)
+        # print('=======================')
         out = self.prior.renderer(
                 mesh, mvp_mtx=mvp_mtx, c2w=c2w, 
                 camera_positions=camera_positions,

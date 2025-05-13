@@ -917,7 +917,10 @@ class DPReconTrainRunner():
                 prior_bbox_root_path = os.path.join(self.plots_dir, 'prior_bbox')
                 for obj_idx in self.model.module.prior_obj_idx_list:         # include bg and obj
                     # obj_mesh_path = os.path.join(self.plots_dir, f'surface_{epoch}_{obj_idx}.ply')
-                    obj_mesh_path = natsorted(glob(os.path.join(self.plots_dir, f'surface_*_{obj_idx}.ply')))[-1]
+                    obj_mesh_paths = natsorted(glob(os.path.join(self.plots_dir, f'surface_*_{obj_idx}.ply')))
+                    if len(obj_mesh_paths) == 0:
+                        continue
+                    obj_mesh_path = obj_mesh_paths[-1]
                     if obj_idx == 0:
                         prior_bbox_path = None
                     else:
@@ -927,7 +930,10 @@ class DPReconTrainRunner():
                 obj_mesh_path_list = []
                 for i in range(self.n_sem):
                     # i_mesh_path = os.path.join(self.plots_dir, f'surface_{epoch}_{i}.ply')
-                    i_mesh_path = natsorted(glob(os.path.join(self.plots_dir, f'surface_*_{i}.ply')))[-1]
+                    i_mesh_paths = natsorted(glob(os.path.join(self.plots_dir, f'surface_*_{i}.ply')))
+                    if len(i_mesh_paths) == 0:
+                        continue
+                    i_mesh_path = i_mesh_paths[-1]
                     obj_mesh_path_list.append(i_mesh_path)
                 prior_bbox_path = None
                 self.model.module.prior.init_color_mesh(obj_mesh_path_list, 1000, prior_bbox_path)   # add total scene

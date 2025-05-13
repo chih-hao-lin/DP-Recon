@@ -342,7 +342,7 @@ class PriorModule(nn.Module, SaverMixin):
                     guidance_inp,
                     self.prompt_utils,
                     **batch,
-                    rgb_as_latents=False,
+                    rgb_as_latents=True,
                     timestep=timestep,
                     vis_mask = out['vis_map'] if 'vis_map' in out else None
                 )
