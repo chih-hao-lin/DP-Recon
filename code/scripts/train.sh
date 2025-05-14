@@ -11,5 +11,8 @@
 # dir_exp=../exps/dprecon_replica_1/2025_05_13_13_27_42
 # cp $dir_exp/plots/sds_views/obj_0/bg_pano/inpaint/rgb_map.png $dir_exp/plots/sds_views/obj_0/bg_pano/bg_inpaint.png
 
-CUDA_LAUNCH_BLOCKING=1 torchrun training/exp_runner.py --conf confs/ours/replica.conf  --scan_id 1 --prior_yaml texture.yaml \
-    --is_continue --ft_folder ../exps/dprecon_replica_1/2025_05_13_13_27_42 --checkpoint 225
+# CUDA_LAUNCH_BLOCKING=1 torchrun training/exp_runner.py --conf confs/ours/replica.conf  --scan_id 1 --prior_yaml texture.yaml \
+#     --is_continue --ft_folder ../exps/dprecon_replica_1/2025_05_13_13_27_42 --checkpoint 225
+
+CUDA_LAUNCH_BLOCKING=1 torchrun training/exp_runner.py --conf confs/ours/replica.conf  --scan_id 0 --prior_yaml texture.yaml \
+    --is_continue --ft_folder ../exps/dprecon_replica_0/2025_05_13_16_06_22 --checkpoint 103
