@@ -1213,8 +1213,12 @@ class DPReconNetwork(nn.Module):
                         camera_batch_split[key] = camera_batch[key][idx:idx+split_num]
                     else:
                         camera_batch_split[key] = camera_batch[key]
-                out_split_temp = self.prior.renderer(mesh, **camera_batch_split)
-
+                try:
+                    out_split_temp = self.prior.renderer(mesh, **camera_batch_split)
+                except Exception as e:
+                    print(f'[ERROR]: {e}')
+                    continue
+                
                 # detach for reduce memory
                 out_split = {}
                 out_split['comp_rgb'] = out_split_temp['comp_rgb'].detach()
@@ -1231,6 +1235,9 @@ class DPReconNetwork(nn.Module):
             os.makedirs(self.prior._save_dir, exist_ok=True)
 
             # save image
+            if total_out is None:
+                print(f'[ERROR]: no output for object {sim_obj_idx}')
+                continue
             for idx in range(total_out['comp_rgb'].shape[0]):
 
                 azimuth = camera_batch['azimuth'][idx].item()

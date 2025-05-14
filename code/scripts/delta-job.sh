@@ -17,52 +17,38 @@ cd /work/hdd/bcrp/cl121/DP-Recon/code
 
 
 # replica 
-# CUDA_LAUNCH_BLOCKING=1 torchrun training/exp_runner.py --conf confs/ours/replica.conf  --scan_id 0 --prior_yaml geometry.yaml 
+# CUDA_LAUNCH_BLOCKING=1 python training/exp_runner.py --conf confs/ours/replica.conf  --scan_id 0 --prior_yaml geometry.yaml 
 #    --is_continue --ft_folder ../exps/dprecon_replica_2/2025_05_12_23_22_37 --checkpoint 60
 
-# CUDA_LAUNCH_BLOCKING=1 torchrun training/exp_runner.py --conf confs/ours/replica.conf  --scan_id 0 --prior_yaml texture.yaml \
+# CUDA_LAUNCH_BLOCKING=1 python training/exp_runner.py --conf confs/ours/replica.conf  --scan_id 0 --prior_yaml texture.yaml \
 #     --is_continue --ft_folder ../exps/dprecon_replica_0/2025_05_13_16_06_22 --checkpoint 103
 
-# CUDA_LAUNCH_BLOCKING=1 torchrun training/exp_runner.py --conf confs/ours/replica.conf  --scan_id 1 --prior_yaml texture.yaml \
+# CUDA_LAUNCH_BLOCKING=1 python training/exp_runner.py --conf confs/ours/replica.conf  --scan_id 1 --prior_yaml texture.yaml \
 #     --is_continue --ft_folder ../exps/dprecon_replica_1/2025_05_13_14_36_16 --checkpoint 225
 
-# CUDA_LAUNCH_BLOCKING=1 torchrun training/exp_runner.py --conf confs/ours/replica.conf  --scan_id 2 --prior_yaml texture.yaml \
+# CUDA_LAUNCH_BLOCKING=1 python training/exp_runner.py --conf confs/ours/replica.conf  --scan_id 2 --prior_yaml texture.yaml \
 #     --is_continue --ft_folder ../exps/dprecon_replica_2/2025_05_13_14_36_16 --checkpoint 114
 
 
 # scannetpp
-# CUDA_LAUNCH_BLOCKING=1 torchrun training/exp_runner.py --conf confs/ours/scannetpp.conf --scan_id 1 --prior_yaml geometry.yaml \
+# CUDA_LAUNCH_BLOCKING=1 python training/exp_runner.py --conf confs/ours/scannetpp.conf --scan_id 1 --prior_yaml geometry.yaml \
 #     --is_continue --ft_folder ../exps/dprecon_scannetpp_1/2025_05_13_14_36_50 --checkpoint 220
 
-# CUDA_LAUNCH_BLOCKING=1 torchrun training/exp_runner.py --conf confs/ours/scannetpp.conf --scan_id 0 --prior_yaml texture.yaml \
+# CUDA_LAUNCH_BLOCKING=1 python training/exp_runner.py --conf confs/ours/scannetpp.conf --scan_id 0 --prior_yaml texture.yaml \
 #     --is_continue --ft_folder ../exps/dprecon_scannetpp_0/2025_05_13_14_36_39 --checkpoint 447
 
-# CUDA_LAUNCH_BLOCKING=1 torchrun training/exp_runner.py --conf confs/ours/scannetpp.conf --scan_id 1 --prior_yaml texture.yaml \
+# CUDA_LAUNCH_BLOCKING=1 python training/exp_runner.py --conf confs/ours/scannetpp.conf --scan_id 1 --prior_yaml texture.yaml \
 #     --is_continue --ft_folder ../exps/dprecon_scannetpp_1/2025_05_13_20_59_20 --checkpoint 220
 
-# CUDA_LAUNCH_BLOCKING=1 torchrun training/exp_runner.py --conf confs/ours/scannetpp.conf --scan_id 2 --prior_yaml texture.yaml \
+# CUDA_LAUNCH_BLOCKING=1 python training/exp_runner.py --conf confs/ours/scannetpp.conf --scan_id 2 --prior_yaml texture.yaml \
 #     --is_continue --ft_folder ../exps/dprecon_scannetpp_2/2025_05_13_16_38_03 --checkpoint 158
 
 # igibson
-# CUDA_LAUNCH_BLOCKING=1 torchrun training/exp_runner.py --conf confs/ours/igibson.conf   --scan_id 1 --prior_yaml geometry.yaml \
+# CUDA_LAUNCH_BLOCKING=1 python training/exp_runner.py --conf confs/ours/igibson.conf   --scan_id 1 --prior_yaml geometry.yaml \
 #     --is_continue --ft_folder ../exps/dprecon_igibson_1/2025_05_12_19_01_26 --checkpoint 30
 
-# CUDA_LAUNCH_BLOCKING=1 torchrun training/exp_runner.py --conf confs/ours/igibson.conf   --scan_id 0 --prior_yaml texture.yaml \
+# CUDA_LAUNCH_BLOCKING=1 python training/exp_runner.py --conf confs/ours/igibson.conf   --scan_id 0 --prior_yaml texture.yaml \
 #     --is_continue --ft_folder ../exps/dprecon_igibson_0/2025_05_13_16_39_41 --checkpoint 46
 
-CUDA_LAUNCH_BLOCKING=1 torchrun training/exp_runner.py --conf confs/ours/igibson.conf   --scan_id 1 --prior_yaml texture.yaml \
+CUDA_LAUNCH_BLOCKING=1 python training/exp_runner.py --conf confs/ours/igibson.conf   --scan_id 1 --prior_yaml texture.yaml \
     --is_continue --ft_folder ../exps/dprecon_igibson_1/2025_05_13_16_40_32 --checkpoint 59
-
-    #    JOBID    PARTITION         NAME           USER ST       TIME  NODES   NODELIST(REASON) FEATURES
-    #  9905414    gpuA100x4    replica_0          cl121 PD       0:00      1         (Priority) (null)
-    #  9905413    gpuA100x4    replica_2          cl121 PD       0:00      1         (Priority) (null)
-    #  9905410    gpuA100x4  scannetpp_0          cl121 PD       0:00      1         (Priority) (null)
-    #  9905405    gpuA100x4    igibson_1          cl121 PD       0:00      1         (Priority) (null)
-    #  9905406    gpuA100x4    igibson_0          cl121 PD       0:00      1         (Priority) (null)
-    #  9905407    gpuA100x4  scannetpp_2          cl121 PD       0:00      1         (Priority) (null)
-    #  9905662     gpuA40x4    igibson_0          cl121 PD       0:00      1         (Priority) (null)
-    #  9905660     gpuA40x4  scannetpp_2          cl121 PD       0:00      1         (Priority) (null)
-    #  9905658     gpuA40x4  scannetpp_0          cl121 PD       0:00      1         (Priority) (null)
-    #  9905652     gpuA40x4    replica_2          cl121 PD       0:00      1         (Priority) (null)
-    #  9905664     gpuA40x4    igibson_1          cl121 PD       0:00      1         (Priority) (null)
-    #  9905624     gpuA40x4    replica_0          cl121  R       8:21      1            gpub066 (null)
