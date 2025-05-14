@@ -264,10 +264,15 @@ class PriorModule(nn.Module, SaverMixin):
 
             # render images
             out = self.renderer(**batch, render_rgb=True)
-
+        elif sim_obj_idx not in self.color_mesh_dict:
+            return {'loss_rgb_sd': torch.tensor(0.0).to(self.device)}
         else:
             mesh = self.color_mesh_dict[sim_obj_idx]
-            out = self.renderer(mesh, **batch)
+            try:
+                out = self.renderer(mesh, **batch)
+            except Exception as e:
+                print(f'[ERROR]: {e}')
+                return {'loss_rgb_sd': torch.tensor(0.0).to(self.device)}
 
         self._save_dir = os.path.join(self._root_save_dir, f'obj_{sim_obj_idx}')
         os.makedirs(self._save_dir, exist_ok=True)
@@ -374,6 +379,9 @@ class PriorModule(nn.Module, SaverMixin):
         self._save_dir = save_root_path
         os.makedirs(self._save_dir, exist_ok=True)
 
+        if obj_idx not in self.color_mesh_dict:
+            print(f'*********** color_mesh_dict has no key: {obj_idx}  ***********')
+            return
         mesh = self.color_mesh_dict[obj_idx]
         exporter_output = self.exporter(mesh)
         for out in exporter_output:

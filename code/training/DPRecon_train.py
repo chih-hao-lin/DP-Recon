@@ -1055,7 +1055,7 @@ class DPReconTrainRunner():
                 with open(eval_json_path, 'r') as f:
                     eval_view_list = json.load(f)
 
-                infer_views_num = 100
+                infer_views_num = 10
                 scale_mats = [infer_camera_dict['scale_mat_%d' % idx].astype(np.float32) for idx in range(infer_views_num)]
                 world_mats = [infer_camera_dict['world_mat_%d' % idx].astype(np.float32) for idx in range(infer_views_num)]
                 cam_intrinsics = self.train_dataset.intrinsics_all[0]       # use the same intrinsics for all views

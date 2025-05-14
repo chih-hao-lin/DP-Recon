@@ -1199,6 +1199,8 @@ class DPReconNetwork(nn.Module):
             else:
                 camera_batch = self.prior.get_anchor_camera_views(anchor_bin, elevation_range, infer_color=True)
 
+            if sim_obj_idx not in self.prior.color_mesh_dict:
+                continue
             mesh = self.prior.color_mesh_dict[sim_obj_idx]
 
             total_out = None
@@ -1300,9 +1302,13 @@ class DPReconNetwork(nn.Module):
         pers_gt = bg_pano_gt_maps[anchor_idx_list]
         pers_gt = torch.from_numpy(pers_gt).float().cuda()
         
-        mesh = self.prior.color_mesh_dict[sim_obj_idx]
-        out = self.prior.renderer(mesh, **camera_batch)
-        pred_rgb_map = out['comp_rgb']
+        try:
+            mesh = self.prior.color_mesh_dict[sim_obj_idx]
+            out = self.prior.renderer(mesh, **camera_batch)
+            pred_rgb_map = out['comp_rgb']
+        except Exception as e:
+            print(f'[ERROR]: {e}')
+            return torch.tensor(0.0).cuda()
 
         vis_threshold = self.bg_vis_thresh
         none_vis_mask = (out['vis_map'] < vis_threshold).float()
