@@ -862,8 +862,8 @@ class DPReconTrainRunner():
 
                     # copy init mesh
                     src_mesh_list = os.listdir(os.path.join(self.ft_folder, 'plots'))
-                    mesh_str = f'surface_{epoch}_'
-                    src_mesh_list = [mesh for mesh in src_mesh_list if mesh_str in mesh]
+                    # mesh_str = f'surface_{epoch}_'
+                    src_mesh_list = [mesh for mesh in src_mesh_list if mesh.endswith('.ply')]
                     for mesh in src_mesh_list:
                         src_mesh_path = os.path.join(self.ft_folder, 'plots', mesh)
                         dst_mesh_path = os.path.join(self.plots_dir, mesh)

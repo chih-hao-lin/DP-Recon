@@ -163,8 +163,8 @@ def sample_eval_data(dir_root, test_split_ratio=0.1, first_k=10):
     dir_eval_mask = os.path.join(dir_eval, "instance_mask")
     os.makedirs(dir_eval_mask, exist_ok=True)
 
-    image_paths = sorted(glob(os.path.join(dir_images, "*.jpg")))
-    mask_paths  = sorted(glob(os.path.join(dir_mask, "*.png")))
+    image_paths = sorted(glob(os.path.join(dir_images, "*")))
+    mask_paths  = sorted(glob(os.path.join(dir_mask, "*")))
     n_images = len(image_paths)
     num_test_split = int(n_images * test_split_ratio)
     train_split_indices = np.linspace(0, n_images - 1, n_images - num_test_split).astype(np.int32)
@@ -228,7 +228,7 @@ def sample_eval_data(dir_root, test_split_ratio=0.1, first_k=10):
     print("Sample evaluation data completed.")
 
 if __name__ == "__main__":
-    dir_root = "/hdd/indoor_digital_twin/DP-Recon/data/idt_data/Beechwood_1_int"
+    dir_root = "/hdd/indoor_digital_twin/DP-Recon/data/idt_data/scannetpp/room_2"
     data_type = "igibson"
     scan_id = 1
 
